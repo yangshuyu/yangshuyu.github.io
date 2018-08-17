@@ -1,7 +1,19 @@
 python常用时间库：datetime和arrow
+---
+layout:     post   				    # 使用的布局（不需要改）
+title:      python常用时间库：datetime和arrow 				# 标题 
+subtitle:   时间库
+date:       2018-08-16 				# 时间
+author:     Yancy 						# 作者
+header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
+catalog: true 						# 是否归档
+tags: python								#标签
+---
 
 ##前言
 >python常用的时间库有很多，功能也很多，例如时间与时间戳之间的转换、时间的前移、增加等，这篇记录常用功能，以防遗忘
+
+
 
 ###一、datetime
 #### datetime.date(日期)
