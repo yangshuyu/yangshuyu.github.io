@@ -1,3 +1,5 @@
+python常用时间库：datetime和arrow
+
 ---
 layout:     post   				    
 title:      python装饰器 				 
@@ -16,172 +18,142 @@ tags:
 
 
 #### 装饰器简单使用（打log）
-```
-In [1]: def logging(func):
-            def wrapper():
-                print("%s is running" % func.__name__)
-                return func()
-            return wrapper
-
-
-        @logging
-        def yancy():
-            print("i am yancy")
-
-        yancy()
-Out [2]:yancy is running
-        i am yancy
 
 ```
-
-#### datetime.time(时间)
-```
-In [1]: import datetime
-
-In [2]: datetime.time(10, 22, 16)
-Out[3]: datetime.time(10, 22, 16)
-
-方法
-In [4]: datetime.time(10, 22, 16).hour  获取时分秒
-Out[5]: 10
-
-In [6]: datetime.time(10, 22, 16).strftime("%X") 格式化
-Out[7]: '10:22:16'
-
-```
+In [1]:
+def logging(func):
+    def wrapper():
+        print("%s is running" % func.__name__)
+        return func()
+    return wrapper
 
 
-#### datetime.datetime(日期+时间)
-```
-In [1]: import datetime
+@logging
+def yancy():
+    print("i am yancy")
 
-In [2]: datetime.datetime.now()   获取本地当前时间
-Out[3]: datetime.datetime(2018, 8, 17, 0, 53, 32, 325028)
+yancy()
 
-In [4]: datetime.datetime.utcnow()   获取utc时间
-Out[5]: datetime.datetime(2018, 8, 16, 16, 53, 39, 185611)
-
-In [6]: datetime.datetime(2018, 2, 28, 0, 0, 0)  获取指定年月日日期
-Out[7]: datetime.datetime(2018, 2, 28, 0, 0)
-
-In [8]: datetime.datetime.now().month - datetime.datetime(2018, 2, 28, 0, 0, 0).month
-Out[9]: 6
-
-In [10]: datetime.datetime(2018, 2, 28, 0, 0, 0)  获取指定年月日照片
-Out[11]: datetime.datetime(2018, 2, 28, 0, 0)
-
-In [12]: datetime.datetime(2018, 2, 28, 0, 0, 0).timestamp()  获取时间戳
-Out[13]: 1519747200.0
-
-In [14]: datetime.datetime.now().strftime('%Y-%m-%d')  格式化时间
-Out[15]: '2018-08-17'
+Out[2]:
+yancy is running
+i am yancy
 
 ```
+这个代码里，logging就是一个装饰器函数，他的作用就是在调用方法是打印出方法的名字，使用方法也很简单
+直接就在想用使用的方法上加上@logging就可以，这个@就是python的语法糖，装饰器可重复利用性，并增加了程序的可读性。
 
-
-#### datetime.timedelta(时间间隔，可以用来做时间加减)
+#### 带参数装饰器(*args, **kwargs)
+简单的装饰器可以实现一些简单的功能，但是上面的装饰器有个问题，如果yancy方法有参数，而我们现在装饰器中处理参数，
+那就要用到带参数的装饰器了
 ```
-In [1]: import datetime
+In [1]:
+def logging(level):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            print(level)
+            return func(*args)
+        return wrapper
 
-In [2]: datetime.datetime.now() - datetime.timedelta(days=3)  当前时间减去三天
-Out[3]: datetime.datetime(2018, 8, 14, 1, 13, 26, 431932)
+    return decorator
 
-In [4]: datetime.datetime.now() - datetime.timedelta(seconds=3)  当前时间减去三秒
-Out[5]: datetime.datetime(2018, 8, 16, 16, 53, 39, 185611)
+@logging('yancy')
+def foo(name='yancy'):
+    print("i am %s" % name)
+
+foo()
+Out [2]:
+yancy
+i am yancy
 
 ```
+这里我们通过嵌套一层方法的方式传递参数，传递的参数可以使str、list、dict
 
 
-###一、arrow
-#### arrow获取时间
-
+#### 类装饰器
+装饰器不仅可以是函数，还可以是类，相比函数装饰器，类装饰器具有灵活度大、高内聚、封装性等优点。使用类装饰器主要依靠类的__call__方法，当使用 @ 形式将装饰器附加到函数上时，就会调用此方法。
 ```
-In [13]: import arrow
+In [1]: 
 
-In [14]: arrow.utcnow()
-Out[15]: <Arrow [2017-02-01T08:30:37.627622+00:00]>
+class logging(object):
+    def __init__(self, func):
+        self._func = func
 
-In [16]: arrow.now()
-Out[17]: <Arrow [2017-02-01T16:32:02.857411+08:00]>
+    def __call__(self):
+        print('class decorator runing')
+        self._func()
+        print('class decorator ending')
 
-In [18]: arrow.now('US/Pacific') 获取指定时区的时间
-Out[19]: <Arrow [2018-08-16T22:40:31.118807-07:00]>
+@logging
+def foo():
+    print('yancy')
+
+foo()
+
+Out [2]:
+class decorator runing
+yancy
+class decorator ending
 
 ```
 
-#### arrow转换成时间戳
+
+#### functools.wraps
+使用装饰器极大地复用了代码，但是他有一个缺点就是原函数的元信息不见了，比如函数的__name__、参数列表，先看例子：
+```
+In [1]:
+def logging(func):
+    def wrapper():
+        print("%s is running" % func.__name__)
+        return func()
+    return wrapper
+
+
+@logging
+def yancy():
+    print("i am yancy")
+
+print(yancy.__name__)
+
+Out [2]:
+wrapper
 
 ```
-In [13]: import arrow
-
-In [15]: arrow.utcnow().timestamp
-Out[15]: 1534477823
-
-In [19]: arrow.now()
-Out[19]: <Arrow [2017-02-01T16:32:02.857411+08:00]>
+这个问题就大了，用我们老大的一句话就是：怎么解决那，还好我们有functools.wraps
 
 ```
+In [1]:
+from functools import wraps
 
-#### arrow时间格式化
+def logging(func):
+    @wraps(func)
+    def wrapper():
+        print("%s is running" % func.__name__)
+        return func()
+    return wrapper
 
-```
-In [13]: import arrow
 
-In [15]: arrow.now().format()
-Out[15]: '2018-08-17 12:23:34+08:00'
+@logging
+def yancy():
+    print("i am yancy")
 
-In [19]: arrow.now().format("YYYY-MM-DD HH:mm")
-Out[19]: '2018-08-17 12:24'
+print(yancy.__name__)
 
-```
-
-#### 字符串生成arrow对象
-
-```
-In [20]: arrow.get("2017-01-20 11:30", "YYYY-MM-DD HH:mm")
-Out[21]: <Arrow [2017-01-20T11:30:00+00:00]>
-
-```
-
-#### 时间戳生成arrow对象
-这里string、integer、float都可已生成
-```
-In [20]: arrow.get("1534477823")
-Out[21]: <Arrow [2018-08-17T03:50:23+00:00]>
-
-In [27]: arrow.get(1485937858.659424)
-Out[28]: <Arrow [2017-02-01T08:30:58.659424+00:00]>
+Out [2]:
+yancy
 
 ```
-
-#### 直接生成Arrow对象
-
-```
-In [20]: arrow.Arrow(2017, 2, 1)
-Out[20]: <Arrow [2017-02-01T00:00:00+00:00]>
-
-In [20]: arrow.get(2018, 8, 15, 1, 0, 0)
-Out[20]: <Arrow [2018-08-15T01:00:00+00:00]>
+wraps本身也是一个装饰器，它能把原函数的元信息拷贝到装饰器里面的 func 函数中，这使得装饰器里面的 func 函数也有和原函数 foo 一样的元信息了。
+#### 装饰器顺序
 
 ```
+In [1]:
+@a
+@b
+@c
+def f ():
+    pass
 
-#### arrow时间加减
-arrow有两个时间加减方法replace与shift
-```
-In [30]: t = arrow.now()
-In [31]: t
-Out[31]: <Arrow [2017-02-01T17:19:19.933507+08:00]>
-
-In [33]: t.shift(days=-1)  # 前一天
-Out[33]: <Arrow [2018-08-16T13:35:07.384647+08:00]>
-
-In [34]: t.shift(weeks=-1)  # 前一周
-Out[34]: <Arrow [2018-08-10T13:35:44.943040+08:00]>
-
-In [35]: t.shift(months=-1) # 前一个月
-Out[35]: <Arrow [2018-07-17T13:36:13.989258+08:00]>
-
-In [37]: t.replace(days=1)  # 明年
-Out[37]: <Arrow [2018-08-18T13:36:46.715196+08:00]>
 
 ```
+装饰器的执行顺序很简单的了，就是从上到下
+
