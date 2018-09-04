@@ -1,14 +1,12 @@
-python常用时间库：datetime和arrow
-
 ---
-layout:     post   				    
-title:      python装饰器 				 
+layout:     post
+title:      python装饰器
 subtitle:   decorator
-date:       2018-09-03 				
-author:     Yancy 						
-header-img: img/post-bg-2015.jpg 	
-catalog: true 						
-tags: 
+date:       2018-09-03
+author:     Yancy
+header-img: img/post-bg-2015.jpg
+catalog: true
+tags:
 	- python
 ---
 
@@ -72,7 +70,7 @@ i am yancy
 #### 类装饰器
 装饰器不仅可以是函数，还可以是类，相比函数装饰器，类装饰器具有灵活度大、高内聚、封装性等优点。使用类装饰器主要依靠类的__call__方法，当使用 @ 形式将装饰器附加到函数上时，就会调用此方法。
 ```
-In [1]: 
+In [1]:
 
 class logging(object):
     def __init__(self, func):
