@@ -1,7 +1,7 @@
 python常用时间库：datetime和arrow
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      python常用时间库：datetime和arrow 				# 标题 
+title:      python常用时间库：datetime和arrow 				# 标题
 subtitle:   时间库
 date:       2018-08-16 				# 时间
 author:     Yancy 						# 作者
