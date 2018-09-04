@@ -1,13 +1,13 @@
-python常用时间库：datetime和arrow
 ---
-layout:     post   				    # 使用的布局（不需要改）
-title:      python常用时间库：datetime和arrow 				# 标题
-subtitle:   时间库
-date:       2018-08-16 				# 时间
-author:     Yancy 						# 作者
-header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
-catalog: true 						# 是否归档
-tags: python								#标签
+layout:     post
+title:      python常用时间库
+subtitle:   datetime和arrow
+date:       2018-08-16
+author:     Yancy
+header-img: img/post-bg-desk.jpg
+catalog: true
+tags:
+   - python
 ---
 
 ##前言
