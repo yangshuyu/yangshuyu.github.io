@@ -51,7 +51,6 @@ True
 ```
 numpy.dtype(object, align, copy)
 ```
-#### 简单数据类型的定义
 定义简单的数据类型
 
 ```
