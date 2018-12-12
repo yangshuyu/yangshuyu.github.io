@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      python的数据处理框架pandas（二）
+title:      python的数据处理框架pandas（一）
 subtitle:   pandas
 date:       2018-12-07
 author:     Yancy
@@ -73,7 +73,7 @@ print(df)                    #定义的dataframe数据
 
 ```
 #### pandas的常用方法
-##### 查看前几行的数据
+**查看前几行的数据**
 
 ```
 df.head(3)
@@ -88,7 +88,7 @@ df.head(3)
 ```
 head方法还可以传入负数,传入负数可以看做从倒数第几位往前取值.
 
-##### 查看后几行的数据
+**查看后几行的数据**
 
 ```
 print(df.tail(3))
@@ -102,7 +102,7 @@ print(df.tail(3))
 理综   0  300
 ```
 
-##### dataframe重命名
+**dataframe重命名**
 
 ```
 df.columns = [2, 1]
@@ -125,7 +125,7 @@ print(df)
 
 这两种方法都可以将张三和李四改成2和1，我是使用第二种方法，其中第二种方法的inplace参数，它为True，则在原有df上更改，为false则copy一个新的df
 
-##### 求dataframe的长度
+**求dataframe的长度**
 
 ```
 print('dataframe有多少行:', len(df))
@@ -138,7 +138,7 @@ dataframe有多少行: 4
 datafram行数和列数: (4, 2)
 ```
 
-##### 去除重复行
+**去除重复行**
 
 ```
 df.drop_duplicates('张三', keep='last', inplace=True) #去重,并保留最后一个
@@ -154,7 +154,7 @@ print(df)
 理综   0  300  非主修
 ```
 
-##### 获取基本统计数据
+**获取基本统计数据**
 
 ```
 pd.options.display.float_format = '{:,.3f}'.format #只小数点后三位
@@ -174,7 +174,7 @@ min   0.000 150.000
 max   0.000 300.000
 ```
 
-##### dataframe的筛选
+**dataframe的筛选**
 获取某一列
 ```
 print(df.张三)    #获取张三那一列
