@@ -3,7 +3,7 @@ layout:     post
 title:      python的数据处理框架numpy（二）
 subtitle:   numpy的进阶使用之dtype
 date:       2018-12-03
-author:     Yancy
+author:     Ysy
 header-img: img/post-bg-desk.jpg
 catalog: true
 tags:
@@ -99,14 +99,14 @@ print(dt['grades'])
 使用自定义数据类型
 
 ```
-d = np.array([('Yancy', (8.1, 9.0)), ('Yu', 6.0)], dtype=dt)
+d = np.array([('Ysy', (8.1, 9.0)), ('Yu', 6.0)], dtype=dt)
 print('d:', d)
 print('gardes:', d['grades'][0])
 ```
 输出
 
 ```
-d: [('Yancy', [8.1, 9. ]) ('Yu', [6. , 6. ])]
+d: [('Ysy', [8.1, 9. ]) ('Yu', [6. , 6. ])]
 gardes: [8.1 9. ]
 ```
 
@@ -151,4 +151,3 @@ dtype修改后数据类型: int32
 dtype修改后数据长度: (8,)
 ``` 
 可以看出astype是copy了一个新对象，并成功修改了类型，而直接修改元数据类型会发生输出改变的错误，所以修改类型的时候要使用astype，不要直接修改元数据的dtype.       
-      

@@ -3,7 +3,7 @@ layout:     post
 title:      python的数据处理框架pandas（一）
 subtitle:   pandas
 date:       2018-12-07
-author:     Yancy
+author:     Ysy
 header-img: img/post-bg-desk.jpg
 catalog: true
 tags:

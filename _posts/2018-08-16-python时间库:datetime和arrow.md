@@ -3,7 +3,7 @@ layout:     post
 title:      python常用时间库
 subtitle:   datetime和arrow
 date:       2018-08-16
-author:     Yancy
+author:     Ysy
 header-img: img/post-bg-desk.jpg
 catalog: true
 tags:

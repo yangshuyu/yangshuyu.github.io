@@ -1,10 +1,10 @@
 # Site settings
-title: Yancy Blog
-SEOTitle: Yancy的博客 | BY Blog
+title: Ysy Blog
+SEOTitle: Ysy的博客 | BY Blog
 header-img: img/post-bg-rwd.jpg
 email: ysyydz@gmail.com
 description: "Every failure is leading towards success."
-keyword: "BY, BY Blog, 杨树宇的博客, yangshuyu, 杨树宇, Yancy, Python, python"
+keyword: "BY, BY Blog, 杨树宇的博客, yangshuyu, 杨树宇, Ysy, Python, python"
 url: "http://yangshuyu.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 github_repo: "https://github.com/yangshuyu/yangshuyu.github.io.git" # you code repository

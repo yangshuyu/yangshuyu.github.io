@@ -3,7 +3,7 @@ layout:     post
 title:      python的数据处理框架numpy（一）
 subtitle:   numpy的简单使用
 date:       2018-11-20
-author:     Yancy
+author:     Ysy
 header-img: img/post-bg-desk.jpg
 catalog: true
 tags:
