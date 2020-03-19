@@ -2,7 +2,7 @@
 layout:     post
 title:      kubernetes之ingress controller
 subtitle:   kubernetes之ingress controller
-date:       2019-11-20
+date:       2020-03-10
 author:     ysy
 header-img: img/post-bg-desk.jpg
 catalog: true
@@ -32,14 +32,14 @@ Ingress优缺点
 	缺点：
 	1、复杂度提升
 	2、加了一层解析
-	
-		
+
+
 
 #### Ingress实现
 实现
 Ingress是一个模块，现在可以实现的方式有很多，例如[ingress-nginx](https://kubernetes.github.io/ingress-nginx/)、[traefik](https://github.com/containous/traefik)，这里是使用的 ingress-nginx， [git地址](https://github.com/kubernetes/ingress-nginx)
 
-##### 第一步 
+##### 第一步
 需要拉取ingress代码，并且进入文件夹 ingress-nginx->deploy->static，最后直接生成该文件夹下的所有配置（先生成命名空间文件），其中包括ingress的命名空间等
 
 ```
@@ -150,7 +150,7 @@ spec:
 ```
 注意：
 
-1、metadata的annotations一定要标明是nginx，要不然会有问题 
+1、metadata的annotations一定要标明是nginx，要不然会有问题
 
 2、ingress的namespace要与所属的pods在同一个
 
