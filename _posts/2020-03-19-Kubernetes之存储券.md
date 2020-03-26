@@ -164,4 +164,164 @@ spec:
 
 创建完pod之后，通过在/data/volumes下创建index.html，然后访问myapp的ip，发现访问的网页是刚修改的网页，说明nfs存储券使用成功。
 
+##### pv与pvc
+PersistentVolume（PV）是集群之中的一块网络存储。跟 Node 一样，也是集群的资源。PV 跟 Volume (卷) 类似，不过会有独立于 Pod 的生命周期。这一 API 对象包含了存储的实现细节，例如 NFS、iSCSI 或者其他的云提供商的存储系统。
 
+PersistentVolumeClaim (PVC) 是用户的一个请求。他跟 Pod 类似。Pod 消费 Node 的资源，PVCs 消费 PV 的资源。Pod 能够申请特定的资源（CPU 和 内存）；Claim 能够请求特定的尺寸和访问模式（例如可以加载一个读写，以及多个只读实例）
+
+pv是集群的资源，pvc是对这一资源的请求。pv和pvc之间的互动遵循了一套生命周期系统
+
+供应
+
+集群管理员会创建一系列的 PV。这些 PV 包含了为集群用户提供的真实存储资源。他们可利用 Kubernetes API 来消费。
+
+绑定
+
+用户创建一个包含了容量和访问模式的持久卷申请。Master 会监听 PVC 的产生，并尝试根据请求内容查找匹配的 PV，并把 PV 和 PVC 进行绑定。用户能够获取满足需要的资源，并且在使用过程中可能超出请求数量。
+
+如果找不到合适的卷，这一申请就会持续处于非绑定状态，一直到出现合适的 PV。例如一个集群准备了很多的 50G 大小的持久卷，（虽然总量足够）也是无法响应 100G 的申请的，除非把 100G 的 PV 加入集群。
+
+使用
+
+Pod 把申请作为卷来使用。集群会通过 PVC 查找绑定的 PV，并 Mount 给 Pod。对于支持多种访问方式的卷，用户在使用 PVC 作为卷的时候，可以指定需要的访问方式。
+
+一旦用户拥有了一个已经绑定的 PVC，被绑定的 PV 就归该用户所有了。用户的 Pods 能够通过在 Pod 的卷中包含的 PVC 来访问他们占有的 PV。
+
+释放
+
+当用户完成对卷的使用时，就可以利用 API 删除 PVC 对象了，而且他还可以重新申请。删除 PVC 后，对应的卷被视为 “被释放”，但是这时还不能给其他的 PVC 使用。之前的 PVC 数据还保存在卷中，要根据策略来进行后续处理。
+
+回收
+
+PV 的回收策略向集群阐述了在 PVC 释放卷的时候，应如何进行后续工作。目前可以采用三种策略：保留，回收或者删除。保留策略允许重新申请这一资源。在持久卷能够支持的情况下，删除策略会同时删除持久卷以及 AWS EBS/GCE PD 或者 Cinder 卷中的存储内容。如果插件能够支持，回收策略会执行基础的擦除操作（rm -rf /thevolume/*），这一卷就能被重新申请了。
+
+Recycling Policy（回收策略）
+当前的回收策略可选值包括：
+
+Retain - 人工重新申请
+
+Recycle - 基础擦除（“rm -rf /thevolume/*”）
+
+Delete - 相关的存储资产例如 AWS EBS，GCE PD 或者 OpenStack Cinder 卷一并删除。
+目前，只有 NFS 和 HostPath 支持 Recycle 策略，AWS EBS、GCE PD 以及 Cinder 卷支持 Delete 策略（*其他的都是 Retain 是吧。。*）。
+
+阶段（Phase）
+
+一个卷会处于如下阶段之一：
+
+Available：可用资源，尚未被绑定到 PVC 上
+Bound：该卷已经被绑定
+Released：PVC 已经被删除，但该资源尚未被集群回收
+Failed：该卷的自动回收过程失败。
+
+那么怎么实现一个pv与pvc那
+
+首先创建几个pv，就用我们刚才搭建的nfs服务器
+
+```
+cd /data/volumes/
+mkdir v{1,2,3}
+```
+首先窗扇3个文件夹，然后更新我们的/etc/exports文件
+
+```
+/data/volumes/v1 *(insecure,rw,no_root_squash)
+/data/volumes/v2 *(insecure,rw,no_root_squash)
+/data/volumes/v3 *(insecure,rw,no_root_squash)
+```
+然后在master上创建三个pv
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv001
+  labels:
+    name: pv001
+spec:
+  nfs:
+    path: /data/volumes/v1
+    server: 10.122.104.165
+  accessModes: ["ReadWriteMany", "ReadWriteOnce"]
+  capacity:
+    storage: 2Gi
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv002
+  labels:
+    name: pv002
+spec:
+  nfs:
+    path: /data/volumes/v2
+    server: 10.122.104.165
+  accessModes: ["ReadWriteMany", "ReadWriteOnce"]
+  capacity:
+    storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv003
+  labels:
+    name: pv003
+spec:
+  nfs:
+    path: /data/volumes/v3
+    server: 10.122.104.165
+  accessModes: ["ReadWriteMany", "ReadWriteOnce"]
+  capacity:
+    storage: 2Gi
+```
+
+然后创建、查看pv
+
+kubectl get pv
+
+```
+pv001   2Gi        RWO,RWX        Retain           Bound       default/mypvc                           9d
+pv002   2Gi        RWO,RWX        Retain           Available                                           9d
+pv003   2Gi        RWO,RWX        Retain           Available                                           9d
+```
+
+然后创建pvc
+
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+  namespace: default
+spec:
+  accessModes: ["ReadWriteMany"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-vol-pvc
+  namespace: default
+spec:
+  containers:
+  - name: myapp
+    image: ikubernetes/myapp:v1
+    volumeMounts:
+    - name: html
+      mountPath: /usr/share/nginx/html/
+  volumes:
+  - name: html
+    persistentVolumeClaim:
+      claimName: mypvc
+```
+然后部署，部署之后我们通过查看pv就回发现其中一个符合尺寸大小的pv已经被占用
+
+```
+NAME    CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM           STORAGECLASS   REASON   AGE
+pv001   2Gi        RWO,RWX        Retain           Bound       default/mypvc                           9d
+
+```
+状态是bound，说明已经绑定成功。
